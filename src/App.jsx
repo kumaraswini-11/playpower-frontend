@@ -1,5 +1,12 @@
-function App() {
-  return <h1 className=" text-3xl font-bold underline">Hello world!</h1>;
-}
+import TimeZoneConversionController from "./components/TimeZoneConversionController";
+
+const App = () => {
+  return (
+    <>
+      <TimeZoneConversionController />
+      {/* <TimeZones /> */}
+    </>
+  );
+};
 
 export default App;

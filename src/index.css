@@ -1,3 +1,83 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Theme */
+    --color-background1: 0deg, 0%, 100%;
+    --color-background2: 0deg, 0%, 96%;
+    --color-background3: 0deg, 0%, 97%;
+    --color-background4: 0deg, 0%, 100%;
+
+    --color-text1: 0deg, 0%, 40%;
+    --color-text2: 0deg, 0%, 60%;
+    --color-text3: 195deg, 100%, 40%;
+
+    --color-accent1: 212deg, 36%, 52%;
+    --color-accent2: 180deg, 55%, 96%;
+  }
+  @media (prefers-scheme: dark) {
+    :root {
+      /* Darl Theme */
+      --color-background1: 0deg, 0%, 10%;
+      --color-background2: 0deg, 0%, 15%;
+      --color-background3: 0deg, 0%, 20%;
+
+      --color-text1: 0deg, 0%, 100%;
+      --color-text2: 0deg, 0%, 100%;
+      --color-text3: 195deg, 100%, 60%;
+
+      --color-accent1: 212deg, 36%, 60%;
+      --color-accent2: 180deg, 55%, 40%;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --color-background1: 0deg, 0%, 10%;
+    --color-background2: 0deg, 0%, 15%;
+    --color-background3: 0deg, 0%, 20%;
+    --color-background4: 0deg, 0%, 15%;
+
+    --color-text1: 0deg, 0%, 100%;
+    --color-text2: 0deg, 0%, 100%;
+    --color-text3: 195deg, 100%, 60%;
+
+    --color-accent1: 212deg, 36%, 60%;
+    --color-accent2: 180deg, 55%, 40%;
+  }
+}
+
+/* 
+.react-datepicker-wrapper {
+  overflow: hidden;
+  width: auto;
+}
+
+.react-datepicker__input-container {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.react-datepicker__calendar-icon {
+  padding: 0.5em;
+  background: #eee;
+  cursor: pointer;
+  height: 100%;
+  width: 25px;
+}
+
+.react-datepicker__view-calendar-icon input {
+  outline: none;
+  padding: 0.5em 1em 0.5em 1em;
+  text-align: left;
+}
+
+.react-datepicker__input-container input:hover {
+  border: 1px solid inherit;
+} */
