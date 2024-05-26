@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, useEffect } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import _ from "lodash";
 import { MdDarkMode, MdOutlineLightMode } from "react-icons/md";
 import { FaRegCalendarPlus, FaPlus } from "react-icons/fa";
@@ -12,6 +12,7 @@ import {
 } from "../utils/dateTimeFormatter.js";
 import CustomDatePicker from "./CustomDatePicker.jsx";
 import ShareLinkSection from "./ShareLinkSection.jsx";
+import useClickOutside from "../hooks/useClickOutside.js";
 
 const IconButton = ({ icon, onClick, title }) => (
   <button
@@ -41,8 +42,10 @@ const TimeZoneConversionController = ({
   const timeOptions = generateTimeOptions("09:30", "23:30", 30);
   const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
+  const domNode = useClickOutside(() => setIsDropdownVisible(false));
+  const [loading, setLoading] = useState(false);
 
-  const generateShareLink = () => {
+  const generateShareLink = useCallback(() => {
     const currentUrl = window.location.origin;
     const datePart =
       includeDate && selectedIncludeDate
@@ -52,24 +55,7 @@ const TimeZoneConversionController = ({
       includeTime && selectedTime ? formatTime(selectedTime) : "";
     const dateTimePart = [datePart, timePart].filter(Boolean).join("/");
     return `${currentUrl}/Timezone${dateTimePart ? `/${dateTimePart}` : ""}`;
-  };
-
-  const handleOnChange = (event) => {
-    const value = event.target.value;
-    setInputValue(value);
-    if (value.trim()) {
-      debouncedApiCall(value);
-    } else {
-      setSearchResults([]);
-      setIsDropdownVisible(false);
-    }
-  };
-
-  const handleOptionClick = (selectedTimeZoneOption) => {
-    setSelectedTimeZones(selectedTimeZoneOption);
-    setIsDropdownVisible(false);
-    setInputValue("");
-  };
+  }, [includeDate, selectedIncludeDate, includeTime, selectedTime]);
 
   const debouncedApiCall = useCallback(
     _.debounce((query) => {
@@ -84,45 +70,85 @@ const TimeZoneConversionController = ({
     [timeZones]
   );
 
+  const handleOnChange = useCallback(
+    (event) => {
+      const value = event.target.value;
+      setInputValue(value);
+      if (value.trim()) {
+        setLoading(true);
+        debouncedApiCall(value);
+        setLoading(false);
+      } else {
+        setSearchResults([]);
+        setIsDropdownVisible(false);
+      }
+    },
+    [debouncedApiCall]
+  );
+
+  const handleOptionClick = useCallback(
+    (selectedTimeZoneOption) => {
+      setSelectedTimeZones(selectedTimeZoneOption);
+      setIsDropdownVisible(false);
+      setInputValue("");
+    },
+    [setSelectedTimeZones]
+  );
+
   return (
     <>
-      <h1 className="mb-4 text-center text-3xl font-semibold underline">
-        UTC To IST Converter
+      <h1 className="mb-2 text-center text-3xl font-semibold underline">
+        TimeZone Converter
       </h1>
-      <section className="mb-2 rounded-sm bg-bgColor-2 p-6 shadow-md">
+      <section className="mb-2 rounded-sm bg-bgColor-2 p-4 shadow-md">
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          <div className="relative flex w-full items-center justify-start rounded-md border border-inherit bg-bgColor-2 text-textColor-2 shadow-inner sm:w-80">
-            <input
-              type="text"
-              className="w-full rounded-md bg-bgColor-4 py-3 pl-3 pr-12 text-sm outline-none"
-              placeholder="Add Time Zone, City or Town"
-              ref={inputRef}
-              value={inputValue}
-              onChange={handleOnChange}
-            />
-            <div className="absolute right-3 flex items-center">
-              <span className="mx-2">|</span>
-              <button
-                className="text-textColor-3 hover:opacity-80"
-                onClick={() => inputRef.current.focus()}
-              >
-                <FaPlus size={iconSize} />
-              </button>
+          <div className="relative">
+            <div className="flex w-full items-center justify-start rounded-md border border-inherit bg-bgColor-2 text-textColor-2 shadow-inner sm:w-80">
+              <input
+                type="text"
+                className="w-full rounded-sm bg-bgColor-4 py-3 pl-3 pr-12 text-sm outline-none"
+                placeholder="Add Time Zone, City or Town"
+                ref={inputRef}
+                value={inputValue}
+                onChange={handleOnChange}
+              />
+              <div className="absolute right-3 flex items-center">
+                <span className="mx-2">|</span>
+                {loading ? (
+                  <svg
+                    className="mr-3 h-5 w-5 animate-spin"
+                    viewBox="0 0 24 24"
+                  ></svg>
+                ) : (
+                  <button
+                    className="text-textColor-3 hover:opacity-80"
+                    onClick={() => inputRef.current.focus()}
+                  >
+                    <FaPlus size={iconSize} />
+                  </button>
+                )}
+              </div>
             </div>
+
+            {isDropdownVisible && (
+              <ul
+                ref={domNode}
+                className="absolute z-50 max-h-52 overflow-y-auto rounded-sm border border-gray-300 bg-bgColor-2 text-textColor-1 hover:text-textColor-3"
+              >
+                {searchResults?.map((result, index) => (
+                  <li
+                    key={`${result.abbreviation}-${index}`}
+                    className="flex cursor-pointer items-center justify-between gap-1 p-2 hover:bg-bgColor-1"
+                    onClick={() => handleOptionClick(result)}
+                  >
+                    <span>{result.abbreviation}</span>
+                    <span>{result.name}</span>
+                    <span>{result.currentTime}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          {isDropdownVisible && (
-            <ul className="absolute mt-1 max-h-60 overflow-y-auto rounded-md border border-gray-300 bg-white">
-              {searchResults?.map((result, index) => (
-                <li
-                  key={index}
-                  className="cursor-pointer p-2 hover:bg-gray-200"
-                  onClick={() => handleOptionClick(result)}
-                >
-                  {result.abbreviation} - {result.name} - {result.currentTime}
-                </li>
-              ))}
-            </ul>
-          )}
 
           <CustomDatePicker
             selectedDate={selectedDate}

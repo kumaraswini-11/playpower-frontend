@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
 
-const fetchTimeData = async (baseUrl) => {
+export const fetchTimeData = async (baseUrl) => {
   try {
     const response = await axios.get(baseUrl);
     const timezones = response.data;
@@ -33,20 +32,3 @@ const fetchTimeData = async (baseUrl) => {
     return [];
   }
 };
-
-const useTimezoneData = () => {
-  const [timeData, setTimeData] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchTimeData("http://worldtimeapi.org/api/timezone");
-      setTimeData(data);
-    };
-
-    fetchData();
-  }, []);
-
-  return { timeData };
-};
-
-export default useTimezoneData;

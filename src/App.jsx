@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TimeZoneConversionController from "./components/TimeZoneConversionController";
 import dragIcon from "./assets/dragIcon.svg";
-import useTimezoneData from "./hooks/useTimezoneData";
+import { fetchTimeData } from "./utils/fetchTimeData";
 import useDragAndDrop from "./hooks/useDragAndDrop";
 
 const TimeScale = ({ marks }) => {
@@ -84,14 +84,20 @@ const TimeZoneList = ({ items, setItems }) => {
 };
 
 const App = () => {
-  const { timeData } = useTimezoneData();
   const [timeZones, setTimeZones] = useState([]);
   const [sortOrder, setSortOrder] = useState("asc");
   const [selectedTimeZones, setSelectedTimeZones] = useState([]);
 
   useEffect(() => {
-    setTimeZones(timeData);
-  }, [timeData]);
+    const fetchData = async () => {
+      const timeData = await fetchTimeData(
+        "http://worldtimeapi.org/api/timezone"
+      );
+      setTimeZones(timeData);
+    };
+
+    fetchData();
+  }, []);
 
   const handleSorting = () => {
     const sortedTimeZones = [...selectedTimeZones].sort((a, b) => {
@@ -100,7 +106,7 @@ const App = () => {
     });
 
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    setSelectedTimeZones(selectedTimeZones);
+    setSelectedTimeZones(sortedTimeZones);
   };
 
   return (
