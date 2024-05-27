@@ -104,9 +104,9 @@ const TimeZoneCard = ({ timeZone, index, dragHandlers, removeTimeZone }) => {
   };
 
   return (
-    <div className="flex items-center justify-start rounded-sm border hover:border-sky-500">
+    <div className="flex h-36 items-center justify-start rounded-sm border hover:border-sky-500">
       <div
-        className="h-full cursor-grab text-gray-800"
+        className="cursor-grab text-gray-800"
         draggable
         onDragStart={(e) => dragHandlers.handleDragStart(e, index)}
         onDragEnter={dragHandlers.handleDragEnter}
@@ -118,7 +118,7 @@ const TimeZoneCard = ({ timeZone, index, dragHandlers, removeTimeZone }) => {
         ))}
       </div>
 
-      <div className="relative flex flex-1 flex-col items-center gap-1 p-3 shadow-md">
+      <div className="relative flex flex-1 flex-col items-center gap-1 p-3 shadow-sm">
         <button
           className="absolute right-1.5 top-1 hover:text-red-500"
           onClick={handelClose}
@@ -176,7 +176,7 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       const timeData = await fetchTimeData(
-        "http://worldtimeapi.org/api/timezone"
+        "https://worldtimeapi.org/api/timezone"
       );
       setTimeZones(timeData);
     };
