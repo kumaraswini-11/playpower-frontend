@@ -17,7 +17,7 @@ export const fetchTimeData = async (baseUrl) => {
             currentTime: timezoneInfo.datetime.split(".")[0].replace("T", " "),
             timeZone: timezoneInfo.utc_offset,
             currentDate: timezoneInfo.datetime.split("T")[0],
-            marks: [0, 25, 50, 75, 100], // Assuming marks for TimeScale
+            // marks: ["12am", "3am", "6pm", "9am", "12pm", "3pm", "6pm", "9pm"],
           };
         } catch (err) {
           console.error(`Failed to get data for timezone: ${timezone}`, err);

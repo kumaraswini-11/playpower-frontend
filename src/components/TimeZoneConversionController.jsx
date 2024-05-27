@@ -9,10 +9,10 @@ import {
   generateTimeOptions,
   formatTime,
   formatDate,
-} from "../utils/dateTimeFormatter.js";
-import CustomDatePicker from "./CustomDatePicker.jsx";
-import ShareLinkSection from "./ShareLinkSection.jsx";
-import useClickOutside from "../hooks/useClickOutside.js";
+} from "../utils/dateTimeFormatter";
+import CustomDatePicker from "./CustomDatePicker";
+import ShareLinkSection from "./ShareLinkSection";
+import useClickOutside from "../hooks/useClickOutside";
 
 const IconButton = ({ icon, onClick, title }) => (
   <button
@@ -59,13 +59,13 @@ const TimeZoneConversionController = ({
 
   const debouncedApiCall = useCallback(
     _.debounce((query) => {
-      const results = timeZones.filter(
+      const results = timeZones?.filter(
         (timeZone) =>
           timeZone.abbreviation.toLowerCase().includes(query.toLowerCase()) ||
           timeZone.name.toLowerCase().includes(query.toLowerCase())
       );
       setSearchResults(results);
-      setIsDropdownVisible(results.length > 0);
+      setIsDropdownVisible(results?.length > 0);
     }, 500),
     [timeZones]
   );
@@ -88,7 +88,10 @@ const TimeZoneConversionController = ({
 
   const handleOptionClick = useCallback(
     (selectedTimeZoneOption) => {
-      setSelectedTimeZones(selectedTimeZoneOption);
+      setSelectedTimeZones((prevSelectedTimeZones) => [
+        ...prevSelectedTimeZones,
+        selectedTimeZoneOption,
+      ]);
       setIsDropdownVisible(false);
       setInputValue("");
     },
