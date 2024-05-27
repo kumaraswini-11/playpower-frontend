@@ -32,7 +32,7 @@ const TimeRangeSlider = ({
             style={{
               left: `${leftPercent}%`,
               top: "5px",
-              height: "16px",
+              height: "12px",
               width: "1px",
             }}
           ></div>
@@ -45,7 +45,7 @@ const TimeRangeSlider = ({
   const renderLabels = () => {
     const labels = [];
     for (let i = minTime; i <= maxTime; i += labelSteps) {
-      const leftPercent = ((i - minTime) / (maxTime - minTime)) * 95;
+      const leftPercent = ((i - minTime) / (maxTime - minTime)) * 97;
       const hours = Math.floor(i / 60);
       const period = hours < 12 ? "am" : "pm";
       const displayHour = hours % 12 === 0 ? 12 : hours % 12;
@@ -55,7 +55,6 @@ const TimeRangeSlider = ({
           className="absolute"
           style={{
             left: `${leftPercent}%`,
-            // left: "20%",
             top: "15px",
           }}
         >
@@ -91,11 +90,11 @@ const TimeRangeSlider = ({
 
 const TimeZoneCard = ({ timeZone, index, dragHandlers }) => {
   const [time, setTime] = useState(timeZone.currentTime);
-  const [formattedTime, setFormattedTime] = useState("");
+  const [formattedTime, setFormattedTime] = useState(timeZone.currentTime);
 
   useEffect(() => {
     setFormattedTime(time);
-  }, [time]);
+  }, [time, timeZone.currentDate]);
 
   return (
     <div className="flex items-center justify-start rounded-sm border hover:border-sky-500">
@@ -130,7 +129,7 @@ const TimeZoneCard = ({ timeZone, index, dragHandlers }) => {
           <label className="flex-1 text-center">{timeZone.currentDate}</label>
         </div>
         <div className="w-full">
-          {timeZone && <TimeRangeSlider time={time} setTime={setTime} />}
+          <TimeRangeSlider time={time} setTime={setTime} />
         </div>
       </div>
     </div>
