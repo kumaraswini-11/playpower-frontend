@@ -43,3 +43,30 @@ export const formatDate = (inputDate) => {
   const parsedDate = parse(inputDate, "dd/MM/yyyy", new Date());
   return format(parsedDate, "MMM-dd-yyyy").toLowerCase();
 };
+
+export const adjustTimezone = (time, offset) => {
+  const [timePart, period] = time.split(" ");
+  const [hours, minutes] = timePart.split(":").map(Number);
+
+  let adjustedHours = hours;
+  if (period === "PM" && hours !== 12) {
+    adjustedHours += 12;
+  } else if (period === "AM" && hours === 12) {
+    adjustedHours = 0;
+  }
+
+  let date = new Date();
+  date.setHours(adjustedHours, minutes);
+
+  const [offsetHours, offsetMinutes] = offset.split(":").map(Number);
+  const totalOffsetMinutes = offsetHours * 60 + (offsetMinutes || 0);
+
+  date = addMinutes(date, totalOffsetMinutes);
+
+  return format(date, "h:mm a");
+};
+
+export const convertToTimeFormat = (dateTimeString) => {
+  const date = parse(dateTimeString, "yyyy-MM-dd HH:mm:ss", new Date());
+  return format(date, "h:mm a");
+};

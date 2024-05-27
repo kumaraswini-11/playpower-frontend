@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
+import { IoClose } from "react-icons/io5";
 import TimeZoneConversionController from "./components/TimeZoneConversionController";
 import dragIcon from "./assets/dragIcon.svg";
 import { fetchTimeData } from "./utils/fetchTimeData";
 import useDragAndDrop from "./hooks/useDragAndDrop";
+import { adjustTimezone, convertToTimeFormat } from "./utils/dateTimeFormatter";
 
 const TimeRangeSlider = ({
   time,
@@ -88,13 +90,18 @@ const TimeRangeSlider = ({
   );
 };
 
-const TimeZoneCard = ({ timeZone, index, dragHandlers }) => {
-  const [time, setTime] = useState(timeZone.currentTime);
+const TimeZoneCard = ({ timeZone, index, dragHandlers, removeTimeZone }) => {
+  const [time, setTime] = useState(convertToTimeFormat(timeZone.currentTime));
   const [formattedTime, setFormattedTime] = useState(timeZone.currentTime);
 
   useEffect(() => {
+    // setFormattedTime(adjustTimezone(time, timeZone.timeZone));
     setFormattedTime(time);
   }, [time, timeZone.currentDate]);
+
+  const handelClose = () => {
+    removeTimeZone(index);
+  };
 
   return (
     <div className="flex items-center justify-start rounded-sm border hover:border-sky-500">
@@ -111,7 +118,14 @@ const TimeZoneCard = ({ timeZone, index, dragHandlers }) => {
         ))}
       </div>
 
-      <div className="flex flex-1 flex-col items-center gap-1 p-3 shadow-md">
+      <div className="relative flex flex-1 flex-col items-center gap-1 p-3 shadow-md">
+        <button
+          className="absolute right-1.5 top-1 hover:text-red-500"
+          onClick={handelClose}
+        >
+          <IoClose size={22} />
+        </button>
+
         <div className="flex w-full items-center gap-2 text-2xl font-bold ">
           <span className="flex-1">{timeZone.abbreviation}</span>
           <div className="mx-auto flex-1">
@@ -136,7 +150,7 @@ const TimeZoneCard = ({ timeZone, index, dragHandlers }) => {
   );
 };
 
-const TimeZoneList = ({ items, setItems }) => {
+const TimeZoneList = ({ items, setItems, removeTimeZone }) => {
   const dragHandlers = useDragAndDrop(items, setItems);
 
   return (
@@ -147,6 +161,7 @@ const TimeZoneList = ({ items, setItems }) => {
           timeZone={item}
           index={index}
           dragHandlers={dragHandlers}
+          removeTimeZone={removeTimeZone}
         />
       ))}
     </section>
@@ -180,6 +195,12 @@ const App = () => {
     setSelectedTimeZones(sortedTimeZones);
   };
 
+  const removeTimeZone = (index) => {
+    setSelectedTimeZones((prevTimeZones) =>
+      prevTimeZones.filter((_, i) => i !== index)
+    );
+  };
+
   return (
     <main className="mx-auto grid max-w-5xl grid-cols-1 gap-2 border bg-bgColor-1 text-textColor-1">
       <TimeZoneConversionController
@@ -187,7 +208,11 @@ const App = () => {
         timeZones={timeZones}
         setSelectedTimeZones={setSelectedTimeZones}
       />
-      <TimeZoneList items={selectedTimeZones} setItems={setSelectedTimeZones} />
+      <TimeZoneList
+        items={selectedTimeZones}
+        setItems={setSelectedTimeZones}
+        removeTimeZone={removeTimeZone}
+      />
     </main>
   );
 };
